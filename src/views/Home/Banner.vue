@@ -58,6 +58,7 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .banners {
+  height: 272px;
   border-radius: 24px;
   overflow: hidden;
 

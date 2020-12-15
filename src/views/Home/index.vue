@@ -29,6 +29,7 @@
         <p>电台</p>
       </div>
     </div>
+    <recommand />
   </div>
 </template>
 
@@ -37,10 +38,11 @@ import { defineComponent } from 'vue'
 import Banner from './Banner.vue'
 import TopHeader from './TopHeader.vue'
 import Icon from '@/components/Icon.vue'
+import Recommand from './Recommand.vue'
 
 export default defineComponent({
   name: 'Home',
-  components: { Banner, TopHeader, Icon },
+  components: { Banner, TopHeader, Icon, Recommand },
 })
 </script>
 <style lang="less" scoped>
