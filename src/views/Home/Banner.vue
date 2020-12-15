@@ -5,8 +5,6 @@
       :autoplay="{
         delay: 5000,
       }"
-      @swiper="onSwiper"
-      @slideChange="onSlideChange"
     >
       <swiper-slide v-for="banner in banners" :key="banner.bannerId">
         <img :src="banner.pic" alt="" />
@@ -20,7 +18,6 @@ import { defineComponent, onMounted, ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import SwiperCore, { Pagination, Autoplay } from 'swiper'
 import 'swiper/swiper.less'
-import 'swiper/components/navigation/navigation.less'
 import 'swiper/components/pagination/pagination.less'
 
 import { http } from '@/utils'
@@ -55,14 +52,6 @@ export default defineComponent({
   components: {
     Swiper,
     SwiperSlide,
-  },
-  methods: {
-    onSwiper(swiper) {
-      console.log(swiper)
-    },
-    onSlideChange() {
-      console.log('slide change')
-    },
   },
 })
 </script>

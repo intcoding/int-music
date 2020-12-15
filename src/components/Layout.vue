@@ -9,29 +9,11 @@
         @click="$router.push('/')"
       >
         <icon type="home" />
-        <p>主页</p>
-      </div>
-
-      <div
-        class="menu-item"
-        :class="{ active: active === 'music' }"
-        @click="$router.push('/music')"
-      >
-        <icon type="music" />
-        <p>音乐</p>
+        <p>音乐馆</p>
       </div>
 
       <div class="menu-item">
         <div class="music-info"></div>
-      </div>
-
-      <div
-        class="menu-item"
-        :class="{ active: active === 'found' }"
-        @click="$router.push('/found')"
-      >
-        <icon type="found" />
-        <p>发现</p>
       </div>
 
       <div
@@ -57,8 +39,8 @@ export default defineComponent({
       switch (this.$route.path) {
         case '/':
           return 'home'
-        case '/music':
-          return 'music'
+        case '/recommend':
+          return 'recommend'
         case '/found':
           return 'found'
         case '/me':
@@ -94,7 +76,7 @@ export default defineComponent({
     box-shadow: 0 20px 20px #111111;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
     padding: 20px 60px;
     position: fixed;
     bottom: 0;
