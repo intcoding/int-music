@@ -25,15 +25,17 @@
         <p>我的</p>
       </div>
     </div>
+    <player />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import Icon from './Icon.vue'
+import Player from './Player.vue'
 
 export default defineComponent({
-  components: { Icon },
+  components: { Icon, Player },
   computed: {
     active() {
       switch (this.$route.path) {
@@ -65,7 +67,7 @@ export default defineComponent({
   .content {
     flex: 1;
     padding: 32px;
-    padding-bottom: 160px;
+    padding-bottom: 240px;
   }
 
   .bottom {
@@ -80,6 +82,7 @@ export default defineComponent({
     padding: 20px 60px;
     position: fixed;
     bottom: 0;
+    z-index: 9999;
 
     .music-info {
       width: 100px;

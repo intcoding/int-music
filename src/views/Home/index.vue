@@ -51,7 +51,7 @@ export default defineComponent({
 .blocks {
   display: flex;
   justify-content: space-around;
-  padding: 32px 0;
+  margin-top: 64px;
 
   .block-item {
     display: flex;

@@ -11,6 +11,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Me',
     component: () => import('@/views/Me.vue'),
   },
+  {
+    path: '/playlist/:id',
+    name: 'Playlist',
+    component: () => import('@/views/PlayList.vue'),
+  },
 ]
 
 const router = createRouter({
