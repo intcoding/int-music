@@ -1,10 +1,11 @@
 // 播放列表
 
 export const playlist = {
+  namespaced: true,
   state: () => ({
     list: [],
   }),
-  actions: {},
   mutations: {},
+  actions: {},
   getters: {},
 }

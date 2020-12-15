@@ -6,6 +6,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import { mapState } from 'vuex'
 
 export default defineComponent({
   setup() {
@@ -13,6 +14,17 @@ export default defineComponent({
     const player = ref<HTMLAudioElement>(null)
 
     return { url, player }
+  },
+  computed: {
+    ...mapState<any>({
+      playingSong: state => state.playing.currentSong,
+      lyric: state => state.playing.lyric,
+    }),
+  },
+  watch: {
+    playingSong(val, prev) {
+      console.log(val, prev)
+    },
   },
 })
 </script>

@@ -19,10 +19,28 @@
       </div>
     </header>
     <div class="card">
+      <div class="actions">
+        <div class="play-all">
+          <icon type="play1" />
+          播放全部
+        </div>
+        <div class="star"><icon type="star" />收藏</div>
+      </div>
       <div class="list">
-        <div class="music-item" v-for="item in playlist.tracks" :key="item.id">
-          {{ item.name }}
-          <div class="ar">{{ item.ar.map(a => a.name).join(', ') }}</div>
+        <div
+          class="music-item"
+          v-for="(item, index) in playlist.tracks"
+          :key="item.id"
+          @click="setCurrentSong(item)"
+        >
+          <div class="index">
+            {{ index + 1 }}
+          </div>
+          <div class="mid">
+            <div class="name">{{ item.name }}</div>
+            <div class="ar">{{ item.ar.map(a => a.name).join(', ') }}</div>
+          </div>
+          <div class="right"></div>
         </div>
       </div>
     </div>
@@ -30,9 +48,11 @@
 </template>
 
 <script lang="ts">
-import { http } from '@/utils'
 import { defineComponent, onMounted, reactive, toRefs } from 'vue'
+import { mapActions } from 'vuex'
 import { useRoute } from 'vue-router'
+import { http } from '@/utils'
+import Icon from '@/components/Icon.vue'
 
 export default defineComponent({
   setup() {
@@ -50,10 +70,16 @@ export default defineComponent({
 
     return toRefs(state)
   },
+  components: { Icon },
+  methods: {
+    ...mapActions({ setCurrentSong: 'playing/setCurrentSong' }),
+  },
 })
 </script>
 
 <style lang="less" scoped>
+@import '@/style/vars.less';
+
 .playlist-detail {
   margin: -32px;
   height: 100%;
@@ -101,22 +127,24 @@ export default defineComponent({
       margin-left: 32px;
 
       p {
-        font-size: 28px;
+        font-size: 24px;
         color: fade(#eeeeee, 80);
       }
 
       .title {
-        font-size: 36px;
+        font-size: 32px;
         color: #eeeeee;
+        font-weight: 500;
       }
+
       .userinfo {
         display: flex;
         align-items: center;
-        margin: 20px 0;
+        margin: 24px 0;
 
         img {
-          width: 48px;
-          height: 48px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
         }
 
@@ -143,15 +171,66 @@ export default defineComponent({
   .card {
     width: 90%;
     margin: -120px 5% 0 5%;
-    box-shadow: 0 0 30px fade(#000000, 10);
+    box-shadow: 0 0 50px fade(#666666, 10);
     background: #ffffff;
     position: relative;
     z-index: 99;
     border-radius: 12px;
   }
 
+  .actions {
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 28px;
+
+    .play-all {
+      display: flex;
+      align-items: center;
+      font-size: 28px;
+      color: @primary-color;
+
+      .icon {
+        font-size: 40px;
+        margin-right: 8px;
+      }
+    }
+
+    .star {
+      font-size: 24px;
+      color: fade(@primary-color, 60);
+
+      .icon {
+        font-size: 32px;
+        margin-right: 8px;
+      }
+    }
+  }
+
   .music-item {
-    font-size: 32px;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    padding: 24px 32px;
+
+    .index {
+      width: 56px;
+      color: #959597;
+    }
+
+    .mid {
+      width: 400px;
+
+      .ar {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 24px;
+        color: #959597;
+      }
+    }
   }
 }
 </style>
