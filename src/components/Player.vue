@@ -1,13 +1,23 @@
 <template>
-  <div v-if="playing.full" class="full-player">
+  <div v-if="playing.full && song" class="full-player">
     <header-bar class="header">
       <div class="title">
-        <div class="name">{{ song?.name }}</div>
+        <div class="name">{{ song.name }}</div>
         <div class="author">
-          {{ (song?.ar || []).map(r => r.name).join(', ') }}
+          {{ (song.ar || []).map(r => r.name).join(', ') }}
         </div>
       </div>
     </header-bar>
+
+    <div class="content">
+      <div
+        class="bg"
+        :style="{ 'background-image': `url(${song.al.picUrl})` }"
+      ></div>
+      <div class="cover" :class="{ rotate: isPlaying }">
+        <img :src="song.al.picUrl" />
+      </div>
+    </div>
 
     <div class="play-actions">
       <div class="bar">
@@ -152,6 +162,43 @@ export default defineComponent({
     }
   }
 
+  .content {
+    height: calc(100vh - 400px);
+    position: relative;
+    overflow: hidden;
+
+    .bg {
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center center;
+      filter: blur(80px);
+      position: absolute;
+      left: 50%;
+      top: 100px;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+
+    .cover {
+      margin-top: 120px;
+      text-align: center;
+      position: relative;
+      z-index: 9;
+
+      img {
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+      }
+
+      &.rotate {
+        animation: spin 20s linear infinite;
+      }
+    }
+  }
+
   .play-actions {
     position: absolute;
     bottom: 0;
@@ -204,6 +251,15 @@ export default defineComponent({
         justify-content: center;
       }
     }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
