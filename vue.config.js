@@ -18,15 +18,5 @@ module.exports = {
       },
     },
   },
-  devServer: {
-    proxy: {
-      '/api': {
-        target: 'http://111.231.86.149:3000',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': '/',
-        },
-      },
-    },
-  },
+  devServer: {},
 }
