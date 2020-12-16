@@ -6,6 +6,7 @@ export const playing = {
   state: () => ({
     currentSong: null,
     lyric: [],
+    url: '',
   }),
   mutations: {
     SET_CURRENT_SONG(state, song) {
@@ -13,18 +14,26 @@ export const playing = {
     },
     SET_LYRIC(state, lyric) {
       state.lyric = lyric
-      console.log(lyric)
+    },
+    SET_URL(state, url) {
+      state.url = url
     },
   },
   actions: {
     async setCurrentSong({ commit }, song) {
       commit('SET_CURRENT_SONG', song)
-      const res = await http.get('lyric', { params: { id: song.id } })
-      if (res.data.nolyric) {
+      const [res1, res2] = await Promise.all([
+        http.get('/song/url', { params: { id: song.id } }),
+        http.get('/lyric', { params: { id: song.id } }),
+      ])
+
+      commit('SET_URL', res1.data.data?.[0].url)
+
+      if (res2.data.nolyric) {
         commit('SET_LYRIC', [['00:00.000', '暂无歌词']])
         return
       }
-      const lyric = res.data.lrc.lyric
+      const lyric = res2.data.lrc.lyric
         .split('\n')
         .map(item => {
           const time = /\[(.*?)\]/.exec(item)?.[1]

@@ -10,20 +10,23 @@ import { mapState } from 'vuex'
 
 export default defineComponent({
   setup() {
-    const url = ref()
     const player = ref<HTMLAudioElement>(null)
 
-    return { url, player }
+    return { player }
   },
   computed: {
     ...mapState<any>({
       playingSong: state => state.playing.currentSong,
       lyric: state => state.playing.lyric,
+      url: state => state.playing.url,
     }),
   },
   watch: {
-    playingSong(val, prev) {
-      console.log(val, prev)
+    url(val) {
+      if (!val) return
+      this.$nextTick(() => {
+        this.player.play()
+      })
     },
   },
 })
