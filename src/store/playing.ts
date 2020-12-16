@@ -1,4 +1,5 @@
 // 正在播放的音乐相关状态
+import { LoopMode, PlayState } from '@/enums'
 import { http } from '@/utils'
 
 export const playing = {
@@ -7,6 +8,8 @@ export const playing = {
     currentSong: null,
     lyric: [],
     url: '',
+    mode: LoopMode.Loop,
+    full: false,
   }),
   mutations: {
     SET_CURRENT_SONG(state, song) {
@@ -18,9 +21,19 @@ export const playing = {
     SET_URL(state, url) {
       state.url = url
     },
+    SET_STATE(state, s: PlayState) {
+      state.state = s
+    },
+    SET_MODE(state, m: LoopMode) {
+      state.mode = m
+    },
+    SET_FULL(state, isFull: boolean) {
+      state.full = isFull
+    },
   },
   actions: {
-    async setCurrentSong({ commit }, song) {
+    async playSong({ commit }, song) {
+      console.log(song)
       commit('SET_CURRENT_SONG', song)
       const [res1, res2] = await Promise.all([
         http.get('/song/url', { params: { id: song.id } }),
@@ -42,6 +55,7 @@ export const playing = {
         })
         .filter(item => item[0] && item[1])
       commit('SET_LYRIC', lyric)
+      commit('SET_FULL', true)
     },
   },
   getters: {},

@@ -9069,10 +9069,23 @@ vue-loader@^15.9.2:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
+vue-property-decorator@^9.0.2:
+  version "9.1.2"
+  resolved "https://registry.npm.taobao.org/vue-property-decorator/download/vue-property-decorator-9.1.2.tgz#266a2eac61ba6527e2e68a6933cfb98fddab5457"
+  integrity sha1-JmourGG6ZSfi5oppM8+5j92rVFc=
+
 vue-router@^4.0.0-0:
   version "4.0.1"
   resolved "https://registry.npm.taobao.org/vue-router/download/vue-router-4.0.1.tgz?cache=0&sync_timestamp=1607347326065&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fvue-router%2Fdownload%2Fvue-router-4.0.1.tgz#309240e50524b1e7d4e82e27f0a0fa25fe3d1d71"
   integrity sha1-MJJA5QUksefU6C4n8KD6Jf49HXE=
+
+vue-slider-component@^4.0.0-beta.3:
+  version "4.0.0-beta.3"
+  resolved "https://registry.npm.taobao.org/vue-slider-component/download/vue-slider-component-4.0.0-beta.3.tgz?cache=0&sync_timestamp=1605858491552&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fvue-slider-component%2Fdownload%2Fvue-slider-component-4.0.0-beta.3.tgz#f1c0c716f36e68b148acc4b34a3a41dd1afc7abe"
+  integrity sha1-8cDHFvNuaLFIrMSzSjpB3Rr8er4=
+  dependencies:
+    core-js "^3.6.5"
+    vue-property-decorator "^9.0.2"
 
 vue-style-loader@^4.1.0, vue-style-loader@^4.1.2:
   version "4.1.2"

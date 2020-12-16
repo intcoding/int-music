@@ -31,7 +31,7 @@
           class="music-item"
           v-for="(item, index) in playlist.tracks"
           :key="item.id"
-          @click="setCurrentSong(item)"
+          @click="playSong(item)"
         >
           <div class="index">
             {{ index + 1 }}
@@ -72,7 +72,7 @@ export default defineComponent({
   },
   components: { Icon },
   methods: {
-    ...mapActions({ setCurrentSong: 'playing/setCurrentSong' }),
+    ...mapActions({ playSong: 'playing/playSong' }),
   },
 })
 </script>
