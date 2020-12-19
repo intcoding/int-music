@@ -33,7 +33,6 @@ export const playing = {
   },
   actions: {
     async playSong({ commit }, song) {
-      console.log(song)
       commit('SET_CURRENT_SONG', song)
       const [res1, res2] = await Promise.all([
         http.get('/song/url', { params: { id: song.id } }),
@@ -43,15 +42,20 @@ export const playing = {
       commit('SET_URL', res1.data.data?.[0].url)
 
       if (res2.data.nolyric) {
-        commit('SET_LYRIC', [['00:00.000', '暂无歌词']])
+        commit('SET_LYRIC', [[0, '暂无歌词']])
         return
       }
       const lyric = res2.data.lrc.lyric
         .split('\n')
         .map(item => {
           const time = /\[(.*?)\]/.exec(item)?.[1]
+          if (!time) return []
+
+          const [m, s, ss] = time.split(/:|\./).map(i => +i)
+          const t = m * 60 + s + ss / 1000
+
           const str = item.replace(/\[(.*?)\]/g, '').trim()
-          return [time, str]
+          return [t, str]
         })
         .filter(item => item[0] && item[1])
       commit('SET_LYRIC', lyric)

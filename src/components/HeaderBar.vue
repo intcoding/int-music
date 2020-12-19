@@ -35,8 +35,6 @@ header {
   align-items: center;
   justify-content: space-between;
   height: 112px;
-  background: #ffffff;
-  box-shadow: 0 0 30px fade(#333333, 5);
   padding: 0 32px;
   color: #333333;
 

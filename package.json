@@ -13,6 +13,7 @@
     "axios": "^0.21.0",
     "core-js": "^3.6.5",
     "swiper": "^6.4.1",
+    "vconsole": "^3.3.4",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vue-slider-component": "^4.0.0-beta.3",

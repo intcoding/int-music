@@ -11,11 +11,7 @@
         <icon type="home" />
         <p>音乐馆</p>
       </div>
-
-      <div class="menu-item">
-        <div class="music-info"></div>
-      </div>
-
+      <div class="menu-item"><player /></div>
       <div
         class="menu-item"
         :class="{ active: active === 'me' }"
@@ -25,7 +21,6 @@
         <p>我的</p>
       </div>
     </div>
-    <player />
   </div>
 </template>
 
@@ -67,7 +62,7 @@ export default defineComponent({
   .content {
     flex: 1;
     padding: 32px;
-    padding-bottom: 240px;
+    padding-bottom: 220px;
   }
 
   .bottom {
@@ -84,24 +79,15 @@ export default defineComponent({
     bottom: 0;
     z-index: 9999;
 
-    .music-info {
-      width: 100px;
-      height: 100px;
-      background: @primary-color;
-      border-radius: 50%;
-    }
-
     .menu-item {
       color: fade(@primary-color, 30);
       font-size: 18px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      transform: scale(0.95);
 
       &.active {
         color: @primary-color;
-        transform: scale(1);
         transition: all 0.3s ease-in-out;
       }
 

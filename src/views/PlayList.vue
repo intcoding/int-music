@@ -82,14 +82,13 @@ export default defineComponent({
 
 .playlist-detail {
   margin: -32px;
-  height: 100%;
 
   header {
     display: flex;
     position: relative;
     overflow: hidden;
     box-sizing: border-box;
-    height: 500px;
+    height: 480px;
     display: flex;
     align-items: flex-start;
     padding: 60px 40px;

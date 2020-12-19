@@ -1,5 +1,10 @@
 <template>
   <div v-if="playing.full && song" class="full-player">
+    <div
+      class="bg"
+      :style="{ 'background-image': `url(${song.al.picUrl})` }"
+    ></div>
+
     <header-bar class="header">
       <div class="title">
         <div class="name">{{ song.name }}</div>
@@ -7,28 +12,41 @@
           {{ (song.ar || []).map(r => r.name).join(', ') }}
         </div>
       </div>
+
+      <template v-slot:actions>
+        <Icon type="down" class="close" @click="close" />
+      </template>
     </header-bar>
 
     <div class="content">
-      <div
-        class="bg"
-        :style="{ 'background-image': `url(${song.al.picUrl})` }"
-      ></div>
       <div class="cover" :class="{ rotate: isPlaying }">
         <img :src="song.al.picUrl" />
+      </div>
+
+      <div class="lyric-container">
+        <div class="lyrics" ref="lyrics">
+          <div
+            class="lyric-line"
+            v-for="(ly, index) in playing.lyric"
+            :key="index"
+            :class="{ active: currentLyricIdx === index }"
+          >
+            {{ ly[1] }}
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="play-actions">
       <div class="bar">
-        <div class="left">{{ time(currentTime) }}</div>
+        <div class="left">{{ formatTime(currentTime) }}</div>
         <vue-slider
           class="slider"
           v-model="progress"
           @change="changeProgress"
           :tooltip="'none'"
         />
-        <div class="right">{{ time(duration) }}</div>
+        <div class="right">{{ formatTime(duration) }}</div>
       </div>
 
       <div class="icons">
@@ -40,22 +58,60 @@
         <icon type="go-next" />
       </div>
     </div>
+  </div>
+  <div v-else class="player-mini" @click="open">
+    <svg
+      :height="circleOption.width"
+      :width="circleOption.width"
+      x-mlns="http://www.w3.org/200/svg"
+    >
+      <circle
+        class="circle1"
+        x="0"
+        y="0"
+        :r="circleOption.radius"
+        :cx="circleOption.cx"
+        :cy="circleOption.cy"
+        :stroke-width="circleOption.strokeWidth"
+        fill="none"
+      />
 
-    <audio
-      :src="playing.url"
-      @canplay="canPlay"
-      @timeupdate="updateTime"
-      ref="player"
+      <circle
+        class="circle2"
+        :r="circleOption.radius"
+        :cx="circleOption.cx"
+        :cy="circleOption.cy"
+        :stroke-width="circleOption.strokeWidth"
+        :stroke-dasharray="strokeDasharray"
+        :stroke-dashoffset="strokeDashoffset"
+        fill="none"
+        stroke-linecap="round"
+        transform="rotate(-90)"
+        transform-origin="center"
+      />
+    </svg>
+
+    <div
+      class="mini-cover"
+      :class="{ rotate: isPlaying }"
+      :style="{
+        'background-image': `url(${song?.al?.picUrl ||
+          require('@/assets/die.png')})`,
+      }"
     />
   </div>
-  <div class="v-else">
-    xixixi
-  </div>
+
+  <audio
+    :src="playing.url"
+    @canplay="canPlay"
+    @timeupdate="updateTime"
+    ref="player"
+  />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
-import { mapState } from 'vuex'
+import { computed, defineComponent, ref, watch, nextTick, reactive } from 'vue'
+import { useStore } from 'vuex'
 import VueSlider from 'vue-slider-component'
 import HeaderBar from './HeaderBar.vue'
 import Icon from '@/components/Icon.vue'
@@ -63,11 +119,38 @@ import { PlayState } from '@/enums'
 
 export default defineComponent({
   setup() {
+    const store = useStore()
     const player = ref<HTMLAudioElement>(null)
+    const lyrics = ref<HTMLDivElement>(null)
     const progress = ref(0)
     const duration = ref(0)
     const currentTime = ref(0)
     const playState = ref(PlayState.Loading)
+    const currentLyricIdx = ref(0)
+
+    const playing = reactive(store.state.playing)
+    const song = computed(() => playing.currentSong)
+
+    watch(
+      () => playing.url,
+      async val => {
+        if (!val) return
+        await nextTick()
+        player.value.play()
+      },
+    )
+
+    watch(
+      () => playing.full,
+      val => {
+        const app = document.querySelector('.layout .content') as HTMLDivElement
+        if (val) {
+          app.style.overflow = 'hidden'
+        } else {
+          app.style.overflow = 'auto'
+        }
+      },
+    )
 
     const canPlay = () => {
       playState.value = PlayState.Playing
@@ -75,8 +158,23 @@ export default defineComponent({
     }
 
     const updateTime = e => {
-      currentTime.value = e.target.currentTime
-      progress.value = (e.target.currentTime / player.value.duration) * 100
+      const ct = e.target.currentTime
+      currentTime.value = ct
+      progress.value = (ct / player.value.duration) * 100
+
+      // 非全屏状态下不更新歌词
+      if (!playing.full) return
+      // update lyric
+      const lyricHeight = lyrics.value.children?.[0].clientHeight
+      playing.lyric.forEach((ly, index) => {
+        if (index === playing.lyric.length) return
+        // 提前 0.5s 切换歌词
+        if (ly[0] - 0.5 < ct && playing.lyric[index + 1][0] > ct) {
+          currentLyricIdx.value = index
+          lyrics.value.style.top =
+            -Math.max(lyricHeight * (index - 4), 0) + 'px'
+        }
+      })
     }
 
     const changeProgress = value => {
@@ -97,8 +195,31 @@ export default defineComponent({
     const isPlaying = computed(() => playState.value === PlayState.Playing)
     const isPausing = computed(() => playState.value === PlayState.Pausing)
 
+    const formatTime = (t: number) => {
+      return `${Math.floor(t / 60)}:${(t % 60).toFixed(0).padStart(2, '0')}`
+    }
+
+    const calcPx = (n: number) =>
+      (document.documentElement.clientWidth / 750) * n
+
+    const circleOption = {
+      radius: calcPx(46),
+      strokeWidth: calcPx(8),
+      cx: calcPx(50),
+      cy: calcPx(50),
+      width: calcPx(100),
+    }
+
+    const circumference = circleOption.radius * 2 * Math.PI
+
+    const strokeDasharray = `${circumference} ${circumference}`
+    const strokeDashoffset = computed(() => {
+      return circumference - (progress.value / 100) * circumference
+    })
+
     return {
       player,
+      lyrics,
       progress,
       currentTime,
       duration,
@@ -109,33 +230,23 @@ export default defineComponent({
       isPausing,
       play,
       pause,
+      currentLyricIdx,
+      playing,
+      song,
+      formatTime,
+      close: () => {
+        store.commit('playing/SET_FULL', false)
+      },
+      open: () => {
+        if (!song.value) return
+        store.commit('playing/SET_FULL', true)
+      },
+      circleOption,
+      strokeDasharray,
+      strokeDashoffset,
     }
   },
   components: { HeaderBar, VueSlider, Icon },
-  computed: {
-    ...mapState<any>({
-      playing: state => state.playing,
-    }),
-    song() {
-      return this.playing.currentSong
-    },
-  },
-  watch: {
-    'playing.url'(val) {
-      if (!val) return
-      this.$nextTick(() => {
-        this.player.play()
-      })
-    },
-    playing() {
-      console.log(this.playing)
-    },
-  },
-  methods: {
-    time: (t: number) => {
-      return `${Math.floor(t / 60)}:${(t % 60).toFixed(0).padStart(2, '0')}`
-    },
-  },
 })
 </script>
 
@@ -148,41 +259,63 @@ export default defineComponent({
   left: 0;
   right: 0;
   bottom: 0;
+  overflow: hidden;
   z-index: 99999;
-  background: #ffffff;
+  background: @primary-color;
+
+  .bg {
+    background-size: cover;
+    background-position: center center;
+    filter: blur(50px) brightness(0.5);
+    position: absolute;
+    left: -200px;
+    top: -200px;
+    bottom: -200px;
+    right: -200px;
+    z-index: 1;
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: fade(@primary-color, 10);
+      z-index: 1;
+    }
+  }
+
+  .header {
+    position: relative;
+    z-index: 2;
+
+    .close {
+      font-size: 36px;
+      color: @primary-color;
+    }
+  }
 
   .title {
     .name {
       font-size: 34px;
+      color: #eeeeee;
     }
 
     .author {
       font-size: 24px;
-      color: #666666;
+      color: #dddddd;
     }
   }
 
   .content {
-    height: calc(100vh - 400px);
+    height: calc(100vh - 360px);
     position: relative;
     overflow: hidden;
 
-    .bg {
-      width: 400px;
-      height: 400px;
-      border-radius: 50%;
-      background-size: cover;
-      background-position: center center;
-      filter: blur(80px);
-      position: absolute;
-      left: 50%;
-      top: 100px;
-      transform: translateX(-50%);
-      z-index: 1;
-    }
-
     .cover {
-      margin-top: 120px;
+      margin-top: 90px;
       text-align: center;
       position: relative;
       z-index: 9;
@@ -197,6 +330,31 @@ export default defineComponent({
         animation: spin 20s linear infinite;
       }
     }
+
+    .lyric-container {
+      position: relative;
+      z-index: 2;
+      height: 450px;
+      overflow: hidden;
+      margin-top: 64px;
+    }
+
+    .lyrics {
+      position: relative;
+      transition: 0.3s all ease-in-out;
+
+      .lyric-line {
+        text-align: center;
+        color: #888888;
+        font-size: 25px;
+        line-height: 50px;
+
+        &.active {
+          color: #ffffff;
+          transform: scale(1.1);
+        }
+      }
+    }
   }
 
   .play-actions {
@@ -206,11 +364,13 @@ export default defineComponent({
     right: 0;
     height: 200px;
     padding: 24px 64px;
+    z-index: 2;
 
     .bar {
       display: flex;
       align-items: center;
       font-size: 26px;
+      color: #ffffff;
 
       .left {
         width: 60px;
@@ -234,11 +394,11 @@ export default defineComponent({
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin: 32px auto 0 auto;
+      margin: 36px auto 0 auto;
 
       .icon {
         font-size: 42px;
-        color: #888888;
+        color: #ffffff;
       }
 
       .play {
@@ -250,6 +410,38 @@ export default defineComponent({
         align-items: center;
         justify-content: center;
       }
+    }
+  }
+}
+
+.player-mini {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  position: relative;
+
+  .mini-cover {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background-size: cover;
+
+    &.rotate {
+      animation: spin 20s linear infinite;
+    }
+  }
+
+  svg {
+    position: absolute;
+    left: -8px;
+    top: -8px;
+
+    .circle1 {
+      stroke: fade(@primary-color, 40);
+    }
+
+    .circle2 {
+      stroke: fade(@primary-color, 80);
     }
   }
 }

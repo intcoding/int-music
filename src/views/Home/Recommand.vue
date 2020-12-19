@@ -37,7 +37,7 @@ export default defineComponent({
     const playlists = ref<PlaylistItem[]>([])
     onMounted(async () => {
       const res = await http.get('/top/playlist')
-      playlists.value = res.data.playlists.slice(0, 9)
+      playlists.value = res.data.playlists.slice(0, 12)
     })
     return { playlists }
   },
@@ -70,6 +70,7 @@ h2 {
   }
 
   p {
+    font-size: 22px;
     line-height: 32px;
     height: 64px;
     margin-top: 4px;
@@ -87,7 +88,7 @@ h2 {
     right: 8px;
     bottom: 92px;
     padding: 4px 20px;
-    font-size: 12px;
+    font-size: 18px;
     border-radius: 20px;
     vertical-align: center;
 
