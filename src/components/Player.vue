@@ -163,7 +163,7 @@ export default defineComponent({
       progress.value = (ct / player.value.duration) * 100
 
       // 非全屏状态下不更新歌词
-      if (!playing.full) return
+      if (!playing.full || playing.lyric.length === 1) return
       // update lyric
       const lyricHeight = lyrics.value.children?.[0].clientHeight
       playing.lyric.forEach((ly, index) => {

@@ -40,8 +40,9 @@ export const playing = {
       ])
 
       commit('SET_URL', res1.data.data?.[0].url)
+      commit('SET_FULL', true)
 
-      if (res2.data.nolyric) {
+      if (res2.data.nolyric || !res2.data?.lrc?.lyric) {
         commit('SET_LYRIC', [[0, '暂无歌词']])
         return
       }
@@ -59,7 +60,6 @@ export const playing = {
         })
         .filter(item => item[0] && item[1])
       commit('SET_LYRIC', lyric)
-      commit('SET_FULL', true)
     },
   },
   getters: {},
